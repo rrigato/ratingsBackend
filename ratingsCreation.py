@@ -22,14 +22,54 @@ class ratings:
 			Configures the connection to AWS
 		'''
 		#self.dynamodb = boto3.client('dynamodb', endpoint_url = 'https://dynamodb.us-east-1.amazonaws.com')
-		self.dynamodb = boto3.client('dynamodb')
-		#self.dynamodb = boto3.client('dynamodb', endpoint_url = 'http://localhost:8000')
-		print(self.dynamodb.list_tables())
+		#self.dynamodb = boto3.client('dynamodb')
+		self.dynamodb = boto3.resource('dynamodb', endpoint_url = 'http://localhost:8000')
+		#print(self.dynamodb.list_tables())
+	def createTable(self):
+		'''
+			Creates the ddl for the table
+			self.Ratings = table object that is created in dynamoDB
+		'''
+
+		self.Ratings= self.dynamodb.create_table(
+		    TableName='Ratings',
+		    KeySchema=[
+			{
+			    'AttributeName': 'Show',
+			    'KeyType': 'HASH'  #Partition key
+			},
+			{
+			    'AttributeName': 'Date',
+			    'KeyType': 'RANGE'  #Sort key
+			}
+		    ],
+		    AttributeDefinitions=[
+			{
+			    'AttributeName': 'Show',
+			    'AttributeType': 'S'
+			},
+			{
+			    'AttributeName': 'Date',
+			    'AttributeType': 'S'
+			}
+
+		    ],
+		    ProvisionedThroughput={
+			'ReadCapacityUnits': 10,
+			'WriteCapacityUnits': 10
+		    }
+		)
+		print(self.Ratings.table_status)
+		
+		#self.Ratings.delete()
+		
 		
 if __name__ == '__main__':
 	ratingsObj = ratings()
 
 	ratingsObj.awsConnect()
+	
+	ratingsObj.createTable()
 	
 
 
