@@ -1,5 +1,6 @@
 import pandas as pd
 import boto3
+from decimal import Decimal
 class ratings:
 	'''
 		Loads the json file and creates a DynamoDB table to upload it
@@ -68,16 +69,23 @@ class ratings:
 			
 		'''
 		
-		for row in self.train:
-			self.ratingsTable.put_item(
+		'''
+			Iterates over each row and inserts into dynamodb
+		'''
+		table = self.dynamodb.Table('Ratings')
+		for index, row in self.train.iterrows():
+			
+			#inserts into dynamodb
+			table.put_item(
 				Item = {
-					'Date':row['Date'],
+					'Date':str(row['Date']),
 					'Show':row['Show'],
-					'AHousehold':row['AHousehold']
+					'AHousehold':str(row['AHousehold'])
 				}
 			)
+			
 
-		self.ratingsTable.delete()
+		#self.ratingsTable.delete()
 		
 if __name__ == '__main__':
 	ratingsObj = ratings()
