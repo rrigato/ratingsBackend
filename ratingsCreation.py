@@ -31,7 +31,7 @@ class ratings:
 			self.Ratings = table object that is created in dynamoDB
 		'''
 
-		self.Ratings= self.dynamodb.create_table(
+		self.ratingsTable= self.dynamodb.create_table(
 		    TableName='Ratings',
 		    KeySchema=[
 			{
@@ -59,10 +59,25 @@ class ratings:
 			'WriteCapacityUnits': 10
 		    }
 		)
-		print(self.Ratings.table_status)
+		print(self.ratingsTable.table_status)
 		
-		#self.Ratings.delete()
 		
+
+	def insertTable(self):
+		'''Inserts the json file into the dynamodb table
+			
+		'''
+		
+		for row in self.train:
+			self.ratingsTable.put_item(
+				Item = {
+					'Date':row['Date'],
+					'Show':row['Show'],
+					'AHousehold':row['AHousehold']
+				}
+			)
+
+		self.ratingsTable.delete()
 		
 if __name__ == '__main__':
 	ratingsObj = ratings()
@@ -70,6 +85,9 @@ if __name__ == '__main__':
 	ratingsObj.awsConnect()
 	
 	ratingsObj.createTable()
+
+	ratingsObj.insertTable()
+
 	
 
 
