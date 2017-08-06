@@ -16,7 +16,21 @@ class ratings:
 			Loads the JSON file into memory
 		'''
 		self.train = pd.read_json('/home/ryan/Documents/ratingsBackend/toonamiCombindedDate.json')
+		
+
+		'''
+			Casts all variables with nan's as a string
+		'''
+		self.train.loc[:,['AHousehold','ATotal','Household']] = self.train.loc[:,['AHousehold','ATotal','Household']].astype(str)
+		
+		'''
+			turns all nan values into nulls
+		'''
+		self.train.loc[self.train.loc[:,'AHousehold'] == 'nan' , 'AHousehold'] = 'null'
+		self.train.loc[self.train.loc[:,'ATotal'] == 'nan' , 'ATotal'] = 'null'
+		self.train.loc[self.train.loc[:,'Household'] == 'nan' , 'Household'] = 'null'
 		print(self.train.head())
+		
 
 	def awsConnect(self):
 		'''
@@ -80,7 +94,10 @@ class ratings:
 				Item = {
 					'Date':str(row['Date']),
 					'Show':row['Show'],
-					'AHousehold':str(row['AHousehold'])
+					'AHousehold':row['AHousehold'],
+					'Household':row['Household'],
+					'ATotal':row['ATotal'],
+					'Total':Decimal(row['Total'])
 				}
 			)
 			
@@ -101,4 +118,3 @@ if __name__ == '__main__':
 
 
 
-#AttributeName=Show,AttributeType=S AttributeName=Date,AttributeType=S AttributeName=Time,AttributeType=S AttributeName=Household,AttributeType=S AttributeName=Total,AttributeType=S AttributeName=AHousehold,AttributeType=S AttributeName=ATotal,AttributeType=S --key-schema AttributeName=Show,KeyType=HASH AttributeName=Date,KeyType=RANGE --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5
